@@ -50,7 +50,7 @@ def fit_vectorizer(df):
     vectorizer = vectorizer.fit(df['features'])
     X = vectorizer.transform(df['features'])
     df['X'] = X
-    return vectorizer
+    return vectorizer, df
 
 
 def save_vectorizer(save_path, vectorizer):
@@ -58,6 +58,13 @@ def save_vectorizer(save_path, vectorizer):
     with open(vectorizer_path, 'wb') as fout:
         pickle.dump(vectorizer, fout)
         return vectorizer_path
+
+
+def save_dataframe(save_path, dataframe):
+    dataframe_path = save_path+'df_train.pickle'
+    with open(dataframe_path, 'wb') as fout:
+        pickle.dump(dataframe, fout)
+        return dataframe_path
 
 
 if __name__ == "__main__":
@@ -72,6 +79,9 @@ if __name__ == "__main__":
     df_read = df_from_files(data_path, file_tags)
     df_tokenized = tokenize(df_read)
     df_cleaned = clean(df_tokenized)
-    vectorizer = fit_vectorizer(df_cleaned)
+    vectorizer, df_vectorized = fit_vectorizer(df_cleaned)
     vectorizer_path = save_vectorizer(save_path, vectorizer)
-    print("Data fitted, vectorizer save as file to path '%s'" % vectorizer_path)    
+    df_train = pd.DataFrame(df_vectorized[['tag','X']])
+    dataframe_path = save_dataframe(save_path, df_train)
+    print("Data fitted, vectorizer saved as file to path '%s'" % vectorizer_path)
+    print("Dataframed saved as file to path '%s'" % dataframe_path)

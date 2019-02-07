@@ -1,5 +1,5 @@
 import pandas as pd
-from nltk.tokenize import WhitespaceTokenizer
+from nltk.tokenize import RegexpTokenizer
 
 
 def df_from_files(path, file_tags):
@@ -17,7 +17,7 @@ def df_from_files(path, file_tags):
 
 
 def tokenize(df):
-    tokenizer = WhitespaceTokenizer()
+    tokenizer = RegexpTokenizer(r'\w+')
 
     def tokenize_row(row):
         tokens = tokenizer.tokenize(row['content'])
@@ -27,8 +27,19 @@ def tokenize(df):
     df = df.apply(tokenize_row, axis=1)
     return df
 
+
 def clean(df):
-    pass
+    import nltk
+    from nltk.corpus import stopwords
+    nltk.download('stopwords')
+
+    def remove_stopwords(row):
+        stop_words = stopwords.words('english')
+        row['cleaned'] = [w for w in row['tokens'] if not w in stop_words] 
+        return row
+    
+    df = df.apply(remove_stopwords, axis=1)
+    return df
 
 
 def to_vector(df):
@@ -45,7 +56,8 @@ if __name__ == "__main__":
     }
     df_read = df_from_files(path, file_tags)
     df_tokenized = tokenize(df_read)
+    df_cleaned = clean(df_tokenized)
 
-    df = df_tokenized
+    df = df_cleaned
     print(df.head())
     

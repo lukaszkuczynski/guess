@@ -43,7 +43,13 @@ def clean(df):
 
 
 def to_vector(df):
-    pass
+    from sklearn.feature_extraction.text import CountVectorizer, HashingVectorizer, TfidfVectorizer
+    vectorizer = TfidfVectorizer(max_df=0.5, min_df=4, use_idf=True)
+    df['features'] = df.apply(lambda row: ' '.join(row['cleaned']), axis=1)
+    vectorizer = vectorizer.fit(df['features'])
+    X = vectorizer.transform(df['features'])
+    df['X'] = X
+    return df
 
 
 if __name__ == "__main__":
@@ -57,7 +63,8 @@ if __name__ == "__main__":
     df_read = df_from_files(path, file_tags)
     df_tokenized = tokenize(df_read)
     df_cleaned = clean(df_tokenized)
+    df_featurized = to_vector(df_cleaned)
 
-    df = df_cleaned
+    df = df_featurized
     print(df.head())
     

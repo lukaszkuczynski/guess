@@ -1,5 +1,6 @@
 import pandas as pd
 from nltk.tokenize import RegexpTokenizer
+import pickle
 
 
 def df_from_files(path, file_tags):
@@ -42,29 +43,35 @@ def clean(df):
     return df
 
 
-def to_vector(df):
+def fit_vectorizer(df):
     from sklearn.feature_extraction.text import CountVectorizer, HashingVectorizer, TfidfVectorizer
     vectorizer = TfidfVectorizer(max_df=0.5, min_df=4, use_idf=True)
     df['features'] = df.apply(lambda row: ' '.join(row['cleaned']), axis=1)
     vectorizer = vectorizer.fit(df['features'])
     X = vectorizer.transform(df['features'])
     df['X'] = X
-    return df
+    return vectorizer
+
+
+def save_vectorizer(save_path, vectorizer):
+    vectorizer_path = save_path+'vectorizer.pickle'
+    with open(vectorizer_path, 'wb') as fout:
+        pickle.dump(vectorizer, fout)
+        return vectorizer_path
 
 
 if __name__ == "__main__":
-    path = 'c:\\data\\devto_data\\'
+    data_path = 'c:\\data\\devto_data\\'
+    save_path = '.\\'
     file_tags = {
         'python' : 'python_posts.csv',
         'java' : 'java_posts.csv',
         'javascript' : 'javascript_posts.csv',
         'devops' : 'devops_posts.csv',
     }
-    df_read = df_from_files(path, file_tags)
+    df_read = df_from_files(data_path, file_tags)
     df_tokenized = tokenize(df_read)
     df_cleaned = clean(df_tokenized)
-    df_featurized = to_vector(df_cleaned)
-
-    df = df_featurized
-    print(df.head())
-    
+    vectorizer = fit_vectorizer(df_cleaned)
+    vectorizer_path = save_vectorizer(save_path, vectorizer)
+    print("Data fitted, vectorizer save as file to path '%s'" % vectorizer_path)    

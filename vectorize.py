@@ -1,4 +1,5 @@
 import pandas as pd
+from nltk.tokenize import WhitespaceTokenizer
 
 
 def df_from_files(path, file_tags):
@@ -15,7 +16,18 @@ def df_from_files(path, file_tags):
     return df
 
 
-def clean_docs(df):
+def tokenize(df):
+    tokenizer = WhitespaceTokenizer()
+
+    def tokenize_row(row):
+        tokens = tokenizer.tokenize(row['content'])
+        row['tokens'] = [str.lower(token) for token in tokens]
+        return row
+
+    df = df.apply(tokenize_row, axis=1)
+    return df
+
+def clean(df):
     pass
 
 
@@ -31,6 +43,9 @@ if __name__ == "__main__":
         'javascript' : 'javascript_posts.csv',
         'devops' : 'devops_posts.csv',
     }
-    df = df_from_files(path, file_tags)
-    print(df.describe())
+    df_read = df_from_files(path, file_tags)
+    df_tokenized = tokenize(df_read)
+
+    df = df_tokenized
+    print(df.head())
     

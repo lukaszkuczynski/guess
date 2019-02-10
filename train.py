@@ -6,7 +6,6 @@ from sklearn.model_selection import train_test_split
 
 
 def train_naivebayes(X, y):
-#     X = df['Xdense']
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
 
     bayes = MultinomialNB()
@@ -34,12 +33,9 @@ def save_model(path, model):
 
 
 if __name__ == "__main__":
-    dataframe_path = '.\\df.pickle'
-    vectorizer_path = '.\\vectorizer.pickle'
-    df = read_pickled_df(dataframe_path)
+    vectorizer = read_pickled_object('.\\vectorizer.pickle')
     X = read_pickled_object('.\\X.pickle')
-    vectorizer = read_pickled_object(vectorizer_path)
-    y = df['tag']
+    y = read_pickled_object('.\\y.pickle')
     bayes_model = train_naivebayes(X, y)
     save_model('.\\bayes.pickle', bayes_model)
     

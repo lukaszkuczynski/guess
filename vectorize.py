@@ -1,15 +1,13 @@
 import pandas as pd
 from nltk.tokenize import RegexpTokenizer
 import pickle
+from sklearn.preprocessing import LabelEncoder
 
 
 def df_from_files(path, file_tags):
-    tag_no = 0
     frames = []
     for tag, filename in file_tags.items():
-        tag_no += 1
         df = pd.read_csv(path + filename)
-        df['tag'] = tag_no
         df['tag_text'] = tag
         frames.append(df)
     df = pd.concat(frames)
@@ -41,6 +39,13 @@ def clean(df):
     
     df = df.apply(remove_stopwords, axis=1)
     return df
+
+
+def label(df):
+    label_encoder = LabelEncoder()
+    labels = label_encoder.fit_transform(df['tag_text'])
+    df['label'] = labels
+    return df, label_encoder
 
 
 def fit_vectorizer(df):
@@ -77,9 +82,11 @@ if __name__ == "__main__":
     df_read = df_from_files(data_path, file_tags)
     df_tokenized = tokenize(df_read)
     df_cleaned = clean(df_tokenized)
-    vectorizer, X = fit_vectorizer(df_cleaned)
+    df_labeled, label_encoder = label(df_cleaned)
+    vectorizer, X = fit_vectorizer(df_labeled)
     vectorizer_path = save_vectorizer(save_path, vectorizer)
     save_pickle(save_path+'X.pickle', X)
-    save_pickle(save_path+'df.pickle', df_cleaned)
+    save_pickle(save_path+'y.pickle', df_cleaned['label'])
+    save_pickle(save_path+'label_encoder.pickle', label_encoder)
     print("Data fitted, vectorizer saved as file to path '%s'" % vectorizer_path)
     print("X and y saved as file to path '%s'" % save_path)

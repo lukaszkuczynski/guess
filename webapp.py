@@ -3,6 +3,7 @@ import datetime, logging
 from logging import handlers
 from predict import Predictor, from_pickle
 import os, requests
+import tempfile
 
 
 app = Flask(__name__)
@@ -29,23 +30,32 @@ def download_file_to(url, path):
 
 
 def load_predictor():
-    if not os.path.exists('bayes.pickle'):
+    temp_dir = tempfile.gettempdir()
+
+    local_path = os.path.join(temp_dir, 'bayes.pickle')
+    if not os.path.exists(local_path):
         url = os.environ['BAYES_SHARED']
         print("Getting bayes file from %s" % url)
-        download_file_to(url, '.\\bayes.pickle')    
-    model = from_pickle('bayes.pickle')
-    if not os.path.exists('vectorizer.pickle'):
+        download_file_to(url, local_path)    
+    model = from_pickle(local_path)
+
+    local_path = os.path.join(temp_dir, 'vectorizer.pickle')
+    if not os.path.exists(local_path):
         url = os.environ['VECTORIZER_SHARED']
         print("Getting vectorizer file from %s" % url)
-        download_file_to(url, '.\\vectorizer.pickle')    
-    vectorizer = from_pickle('vectorizer.pickle')
-    if not os.path.exists('label_encoder.pickle'):
+        download_file_to(url, local_path)    
+    vectorizer = from_pickle(local_path)
+
+    local_path = os.path.join(temp_dir, 'label_encoder.pickle')
+    if not os.path.exists(local_path):
         url = os.environ['LABEL_ENCODER_SHARED']
         print("Getting label_encoder file from %s" % url)
-        download_file_to(url, '.\\label_encoder.pickle')    
-    label_encoder = from_pickle('label_encoder.pickle')
+        download_file_to(url, local_path)    
+    label_encoder = from_pickle(local_path)
+
     predictor = Predictor(model, vectorizer, label_encoder)
     return predictor
+
 
 predictor = load_predictor()
 

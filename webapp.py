@@ -67,7 +67,8 @@ def hello():
         content = request.form['content']
         prediction = predictor.predict(content)
         message = str(prediction)
-    return render_template("index.html", message = message)
+        prediction = prediction
+    return render_template("index.html", message = message, prediction=prediction)
 
 
 @app.before_request

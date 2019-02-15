@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>search my bio</title>
+    <title>Guess Blog Post Category</title>
     <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"/>
 
     <!-- <script>
@@ -16,15 +16,26 @@
 </head>
 <body>
 <div class="container">
-    container
+    <h1>Guess Blog Post Category</h1>
 
+    <h2>How to use</h2>
+    
+    <ol>
+        <li>Find your article</li>
+        <li>Copy article content</li>
+        <li>Paste to the textarea here</li>
+        <li>Run "Guess"ing</li>
+    </ol>
+
+    <div class="form-group">
     <form method="POST" action="/">
-        <textarea id="content" name="content">
+        <textarea class="form-control" rows="5" id="content" name="content">
         </textarea>
-        <input type="submit" value="Guess" />
+        <input class="btn btn-primary" type="submit" value="Guess" />
     </form>
+    </div>
 
-    <label>RESULT</label>
+    <h2>Result</h2>
     <div id="result">
         {{message}}
     </div>

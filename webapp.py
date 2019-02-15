@@ -64,16 +64,20 @@ def hello():
     categories = None
     values = None
     predicted_category = None
+    error_message = None
     if request.method == 'GET':
         pass
     else:
         content = request.form['content']
-        prediction = predictor.predict(content)
-        sorted_categories = sorted(prediction.items(), key=lambda tup:tup[1], reverse=True)
-        categories = list(dict(sorted_categories).keys())
-        values = list(dict(sorted_categories).values())
-        predicted_category = categories[0]
-    return render_template("index.html", categories=categories, values=values, predicted_category=predicted_category)
+        if not content.strip():
+            error_message = "Cannot predict empty content!"
+        else:
+            prediction = predictor.predict(content)
+            sorted_categories = sorted(prediction.items(), key=lambda tup:tup[1], reverse=True)
+            categories = list(dict(sorted_categories).keys())
+            values = list(dict(sorted_categories).values())
+            predicted_category = categories[0]
+    return render_template("index.html", categories=categories, values=values, predicted_category=predicted_category, error_message=error_message)
 
 
 @app.before_request

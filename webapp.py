@@ -61,14 +61,19 @@ predictor = load_predictor()
 
 @app.route("/", methods=['GET','POST'])
 def hello():
+    categories = None
+    values = None
+    predicted_category = None
     if request.method == 'GET':
-        message = "This is front page"
+        pass
     else:
         content = request.form['content']
         prediction = predictor.predict(content)
-        message = str(prediction)
-        prediction = prediction
-    return render_template("index.html", message = message, prediction=prediction)
+        sorted_categories = sorted(prediction.items(), key=lambda tup:tup[1], reverse=True)
+        categories = list(dict(sorted_categories).keys())
+        values = list(dict(sorted_categories).values())
+        predicted_category = categories[0]
+    return render_template("index.html", categories=categories, values=values, predicted_category=predicted_category)
 
 
 @app.before_request

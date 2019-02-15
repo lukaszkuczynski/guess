@@ -3,7 +3,7 @@
 <head>
     <title>Guess Blog Post Category</title>
     <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"/>
-
+    <script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.js"></script>
     <!-- <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -12,7 +12,7 @@
       ga('create', 'UA-103556016-2', 'auto');
       ga('send', 'pageview');
     </script> -->
-
+    
 </head>
 <body>
 <div class="container">
@@ -35,11 +35,66 @@
     </form>
     </div>
 
+
+    {% if categories != None %}
     <h2>Result</h2>
-    <div id="result">
-        {{message}}
-    </div>
     
+    <div class="alert alert-success" role="alert">
+        Your text is most likely about <strong>{{ predicted_category }}</strong>
+    </div>
+
+    <canvas id="myChart" width="200" height="200"></canvas>
+
+    <script>
+        
+
+            categories = {{ categories|safe }}
+            values = {{ values|safe }}
+    
+            var ctx = document.getElementById("myChart").getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: categories,
+                    datasets: [{
+                        data: values,
+                        // backgroundColor: [
+                        //     'rgba(255, 99, 132, 0.2)',
+                        //     'rgba(54, 162, 235, 0.2)',
+                        //     'rgba(255, 206, 86, 0.2)',
+                        //     'rgba(75, 192, 192, 0.2)',
+                        //     'rgba(153, 102, 255, 0.2)',
+                        //     'rgba(255, 159, 64, 0.2)'
+                        // ],
+                        // borderColor: [
+                        //     'rgba(255,99,132,1)',
+                        //     'rgba(54, 162, 235, 1)',
+                        //     'rgba(255, 206, 86, 1)',
+                        //     'rgba(75, 192, 192, 1)',
+                        //     'rgba(153, 102, 255, 1)',
+                        //     'rgba(255, 159, 64, 1)'
+                        // ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    legend: false,
+                    responsive: false
+                //     scales: {
+                //         yAxes: [{
+                //             ticks: {
+                //                 beginAtZero:true
+                //             }
+                //         }]
+                //     }
+                }
+            });
+        </script>
+    {% else %}
+        <div class="alert alert-warning" role="alert">
+            Now there is empty here.. Please run predictions!
+        </div>
+    {% endif %}
 </div>
 
 

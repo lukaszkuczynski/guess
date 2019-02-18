@@ -23,34 +23,21 @@ handler = handlers.RotatingFileHandler(
 app.logger.addHandler(handler)
 app.logger.addHandler(logging.StreamHandler())
 
-def download_file_to(url, path):
-    r = requests.get(url)
-    with open(path, 'wb') as fout:
-        fout.write(r.content)
-
-
 def load_predictor():
-    temp_dir = tempfile.gettempdir()
-
-    local_path = os.path.join(temp_dir, 'bayes.pickle')
+    current_dir = os.path.curdir
+    local_path = os.path.join(current_dir, 'bayes.pickle')
     if not os.path.exists(local_path):
-        url = os.environ['BAYES_SHARED']
-        print("Getting bayes file from %s" % url)
-        download_file_to(url, local_path)    
+        raise Exception("model file missing at '%s'" % local_path)
     model = from_pickle(local_path)
 
-    local_path = os.path.join(temp_dir, 'vectorizer.pickle')
+    local_path = os.path.join(current_dir, 'vectorizer.pickle')
     if not os.path.exists(local_path):
-        url = os.environ['VECTORIZER_SHARED']
-        print("Getting vectorizer file from %s" % url)
-        download_file_to(url, local_path)    
+        raise Exception("vectorizer file missing at '%s'" % local_path)
     vectorizer = from_pickle(local_path)
 
-    local_path = os.path.join(temp_dir, 'label_encoder.pickle')
+    local_path = os.path.join(current_dir, 'label_encoder.pickle')
     if not os.path.exists(local_path):
-        url = os.environ['LABEL_ENCODER_SHARED']
-        print("Getting label_encoder file from %s" % url)
-        download_file_to(url, local_path)    
+        raise Exception("labelencoder file missing at '%s'" % local_path)
     label_encoder = from_pickle(local_path)
 
     predictor = Predictor(model, vectorizer, label_encoder)
@@ -82,15 +69,11 @@ def hello():
 
 @app.before_request
 def pre_request_logging():
-    #Logging statement
-    # if 'text/html' in request.headers['Accept']:
     app.logger.info('\t'.join([
         datetime.datetime.today().ctime(),
         request.remote_addr,
         request.method,
         request.url,
-        # str(request.data,
-        # ', '.join([': '.join(x) for x in request.headers])]
         ])
     )
 

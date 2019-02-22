@@ -4,6 +4,7 @@ from logging import handlers
 from predict import Predictor, from_pickle
 import os, requests
 import tempfile
+from bs4 import BeautifulSoup
 
 
 app = Flask(__name__)
@@ -46,6 +47,17 @@ def load_predictor():
 
 predictor = load_predictor()
 
+def from_devto(url):
+    resp = requests.get(url)
+    text = resp.text
+    bs = BeautifulSoup(text, "lxml")
+    article = bs.find(id="article-body")
+    if article:
+        return article.text
+    else:
+        return None
+
+
 @app.route("/", methods=['GET','POST'])
 def hello():
     categories = None
@@ -55,15 +67,21 @@ def hello():
     if request.method == 'GET':
         pass
     else:
-        content = request.form['content']
-        if not content.strip():
-            error_message = "Cannot predict empty content!"
+        url = request.form['url'].strip()
+        if url == '':
+            error_message = "URL can not be empty"
+        elif not url.startswith('https://dev.to/'):
+            error_message = "URL has to be from dev.to"
         else:
-            prediction = predictor.predict(content)
-            sorted_categories = sorted(prediction.items(), key=lambda tup:tup[1], reverse=True)
-            categories = list(dict(sorted_categories).keys())
-            values = list(dict(sorted_categories).values())
-            predicted_category = categories[0]
+            content = from_devto(url)
+            if not content:
+                error_message = "content from dev.to is empty"
+            else:
+                prediction = predictor.predict(content)
+                sorted_categories = sorted(prediction.items(), key=lambda tup:tup[1], reverse=True)
+                categories = [item[0] for item in sorted_categories]
+                values = [item[1] for item in sorted_categories]
+                predicted_category = categories[0]
     return render_template("index.html", categories=categories, values=values, predicted_category=predicted_category, error_message=error_message)
 
 

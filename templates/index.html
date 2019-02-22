@@ -21,19 +21,19 @@
     <h2>How to use</h2>
     
     <ol>
-        <li>Find your article</li>
-        <li>Copy article content</li>
-        <li>Paste to the textarea here</li>
+        <li>Find your article on `dev.to`</li>
+        <li>Copy and paste URL</li>
         <li>Run "Guess"ing</li>
     </ol>
 
+
     <div class="form-group">
-    <form method="POST" action="/">
-        <textarea class="form-control" rows="5" id="content" name="content">
-        </textarea>
-        <input class="btn btn-primary" type="submit" value="Guess" />
-    </form>
+        <form method="POST" action="/">
+            <input class="form-control" type="text" name="url" />
+            <input class="btn btn-primary" type="submit" value="Guess by URL" />
+        </form>
     </div>
+    
 
     {% if error_message != none %}
     <div class="alert alert-danger" role="alert">

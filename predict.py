@@ -22,8 +22,12 @@ class Predictor():
 
 
 def from_pickle(path):
+    import os   
     with open(path, 'rb') as fin:
-        return pickle.load(fin)
+        if os.sys.version_info.major == 2:
+            return pickle.load(fin)
+        else:
+            return pickle.load(fin, encoding='latin1')
 
 
 if __name__ == "__main__":

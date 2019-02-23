@@ -50,7 +50,7 @@ predictor = load_predictor()
 def from_devto(url):
     resp = requests.get(url)
     text = resp.text
-    bs = BeautifulSoup(text, "lxml")
+    bs = BeautifulSoup(text, "html.parser")
     article = bs.find(id="article-body")
     if article:
         return article.text

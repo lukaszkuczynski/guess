@@ -1,7 +1,6 @@
-pandas
-nltk
 sklearn
 scipy
 Flask
 gunicorn==19.7.1
 requests
+bs4
